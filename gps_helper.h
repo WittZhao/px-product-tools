@@ -744,7 +744,7 @@ public:
                 {
                    gps_GPGSVDecode(nmea, &GPGSV, NMEA_BUFFER_SIZE);
                 }
-                else if (ht_StrCmp(nmea + 1, "BD") >= 2)
+                else if (ht_StrCmp(nmea + 1, "BD") >= 2 || ht_StrCmp(nmea + 1, "GB") >= 2)
                 {
                    gps_GPGSVDecode(nmea, &BDGSV, NMEA_BUFFER_SIZE);
                 }

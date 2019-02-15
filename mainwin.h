@@ -167,6 +167,7 @@ struct at_test_cmd_t{
   int ota_imei_check;
   int ota_imei_write;
   int ota_check;
+  int gps_test_imei_get;
   QString ota_imeir_text;
   QString imeiw_input_text;
   QString imeiw_imei_text;
@@ -333,7 +334,7 @@ private:
     void testconfiginit();
     void com_init(void);
     bool imei_get(QString src, QString &imei, QString &sn);
-
+    void save_gps_test_result(QString result, QString imei);
 private slots:
    // void on_sendAuto_CheckBox_clicked(bool checked);
     void on_clearSendCount_Button_clicked();

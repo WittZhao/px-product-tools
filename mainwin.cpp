@@ -23,6 +23,9 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include "globle.h"
+#include <QtCore/QTextStream>
+#include <QtCore/QFile>
+#include <QtCore/QIODevice>
 
 #define AT_WAIT_TIME_DEFAULT 500
 #define AT_WAIT_TIME_CONNECT 100*40
@@ -427,6 +430,7 @@ void mainWin::on_time_update()
             show_gps_result("TIMEOUT","ff0000");
             at_gps_cmd_block.is_factory_gps_snr_test=0;
             ui->progressBar_gps_test->setValue(0);
+            save_gps_test_result("TIMEOUT", test_cmd_block.ota_imeir_text);
         }
     }
     if(at_gps_cmd_block.is_factory_agps_test)
@@ -700,10 +704,17 @@ void mainWin::com_at_process(QByteArray combuf)
 
                }else{
                    ui->lb_check_ota_result->setText("IMEI不相同，请确认");
-                    ota_stop();
+                   ota_stop();
                }
                test_cmd_block.ota_imei_check = 0;
                break;
+           }else if(1 == test_cmd_block.gps_test_imei_get){
+               test_cmd_block.ota_imeir_text = imei;
+               test_cmd_block.ota_imeir_text.remove(" ");
+               test_cmd_block.ota_imeir_text.remove("\r");
+               test_cmd_block.ota_imeir_text.remove("\n");
+               test_cmd_block.gps_test_imei_get = 0;
+               at_gps_cmd_block.state=at_net_state_cpin_send;
            }else{
                ui->lb_imei_show->setText(imei);
            }
@@ -1025,6 +1036,24 @@ void mainWin::show_com_rx(QByteArray combuf)
         show_log(utilMan::toHexStr(combuf),QColor("blue"),false);
     }
 }
+//zwj  保存GPS测试结果
+void mainWin::save_gps_test_result(QString result, QString imei)
+{
+    QString patch = qApp->applicationDirPath();
+    patch.append("/gps_test.txt");
+    QFile file(patch);
+    if(!file.open(QIODevice::Append|QIODevice::Text))
+    {
+        QMessageBox::critical(NULL,"提示","无法创建文件");
+        return;
+    }
+    QDateTime current_date_time =QDateTime::currentDateTime();
+    QString current_date = current_date_time.toString("yyyy/MM/dd hh:mm:ss");
+
+    QTextStream txtOutput(&file);
+    txtOutput << current_date + "***" + imei + "***" + result << endl;
+    file.close();
+}
 
 void mainWin::show_gps_info()
 {
@@ -1061,13 +1090,15 @@ void mainWin::show_gps_info()
             ui->te_gps_gsv->append(QString().sprintf("ID:%04d:%04d",gps_helper::GPGSV.PRN[i],gps_helper::GPGSV.CN[i]));
             if( at_gps_cmd_block.is_factory_gps_snr_test==1)
             {
-                if(gps_helper::GPGSV.CN[i]>=gps_helper::gps_param.sni)
+                if(gps_helper::GPGSV.PRN[i] == gps_helper::gps_param.num
+                    && gps_helper::GPGSV.CN[i]>=gps_helper::gps_param.sni)
                 {
                     //gps test passs
                     ui->pushButton_gps_stop->click();
                     at_gps_cmd_block.is_factory_gps_snr_test=0;
                     ui->progressBar_gps_test->setValue(0);
                     show_gps_result("PASS","00ff00");
+                    save_gps_test_result("PASS", test_cmd_block.ota_imeir_text);
                 }
             }
         }
@@ -2042,6 +2073,7 @@ void mainWin::on_at_timer()
                     show_gps_result("FAIL:SIM","ff0000");
                     at_gps_cmd_block.is_factory_gps_snr_test=0;
                     ui->progressBar_gps_test->setValue(0);
+                    save_gps_test_result("FAIL:SIM", test_cmd_block.ota_imeir_text);
                 }
             }
             break;
@@ -2680,15 +2712,20 @@ void mainWin::on_pushButton_13_clicked()
 void mainWin::on_pushButton_gps_start_clicked()
 {
     at_gps_cmd_block.gps_loop_enable=true;
-    at_gps_cmd_block.state=at_net_state_cpin_send;
+//    at_gps_cmd_block.state=at_net_state_cpin_send;
     at_gps_cmd_block.gps_is_opened=0;
     at_gps_cmd_block.is_factory_gps_snr_test=1;
     at_gps_cmd_block.gps_test_life=0;
     at_gps_cmd_block.cpin_test_cnt=0;
     at_gps_cmd_block.cpin_is_tested=0;
+    test_cmd_block.state = at_state_imei_read_wait;
+    test_cmd_block.gps_test_imei_get = 1;
+    QString buf=QString().sprintf("AT+EGMR=2,7\r\n");
+    this->com_write(buf);
     show_gps_result("testing...","000000");
     ui->pushButton_gps_start->setEnabled(false);
     ui->pushButton_gps_stop->setEnabled(true);
+    memset(&gps_helper::GPGSV, 0x00,sizeof(gsv_t));
 }
 
 void mainWin::on_pushButton_gps_stop_clicked()
