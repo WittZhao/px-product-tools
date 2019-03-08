@@ -58,11 +58,13 @@ void httppost::post_p310_ota(QString token,QString eid,QString imsi, QString new
   ota_post_data = post_data;
 //    ota_post_data_display(post_data);
   //设置头信息
+//  network_request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded\r\naccess_token:TK1.0LFTYELT12S00000");
   network_request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded\r\naccess_token:TK1.0LueuEDmtDf");
   network_request.setHeader(QNetworkRequest::ContentLengthHeader, post_data.length());
 
   //设置url
   network_request.setUrl(QUrl("http://iotchips.cmiotit.com:8089/api/onlineInfo"));
+//  network_request.setUrl(QUrl("http://39.155.163.206:8888/batch/api/onlineInfo"));
 
   //connect(network_manager, &QNetworkAccessManager::finished, this, &HttpManager::replyFinished);
   connect(network_manager,SIGNAL(finished(QNetworkReply*)), this, SLOT(reply_ota_post(QNetworkReply*)));

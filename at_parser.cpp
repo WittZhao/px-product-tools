@@ -48,6 +48,9 @@ QString at_parser::ccid_get(QString buf)
         {
             ccid=buf.mid(start+1,end-start);
             ccid.trimmed();
+            ccid.remove(" ");
+            ccid.remove("\r");
+            ccid.remove("\n");
             return ccid;
         }
         else

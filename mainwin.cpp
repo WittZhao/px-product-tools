@@ -782,7 +782,7 @@ void mainWin::com_at_process(QByteArray combuf)
             if(ccid!=NULL)
             {
               ccid=ccid.trimmed();
-              if(ccid.length() == 20)
+//              if(ccid.length() == 20)
               {
                   qDebug()<<QString("ccid read wait:")<<comstr<<"get ccid "<<ccid.length()<<"bytes :"<<ccid;
                   test_cmd_block.state=at_state_ccid_read_ack;
