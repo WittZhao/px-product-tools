@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     database.cpp \
     gps_setting.cpp \
     at_parser.cpp \
-    qcustomplot.cpp
+    qcustomplot.cpp \
+    aes128.cpp
 
 HEADERS  += mainwin.h \
     utilman.h \
@@ -59,7 +60,8 @@ HEADERS  += mainwin.h \
     gps_setting.h \
     at_parser.h \
     qcustomplot.h \
-    globle.h
+    globle.h \
+    aes128.h
 
 win32 { SOURCES += qextserialport_win.cpp }
 unix { SOURCES += qextserialport_unix.cpp }

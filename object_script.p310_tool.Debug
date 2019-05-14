@@ -20,6 +20,7 @@ INPUT(
 ./debug\gps_setting.o
 ./debug\at_parser.o
 ./debug\qcustomplot.o
+./debug\aes128.o
 ./debug\qextserialport_win.o
 ./debug\qrc_images.o
 ./debug\moc_mainwin.o

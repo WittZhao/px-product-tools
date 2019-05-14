@@ -20,6 +20,7 @@ INPUT(
 ./release\gps_setting.o
 ./release\at_parser.o
 ./release\qcustomplot.o
+./release\aes128.o
 ./release\qextserialport_win.o
 ./release\qrc_images.o
 ./release\moc_mainwin.o

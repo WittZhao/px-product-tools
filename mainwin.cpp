@@ -26,6 +26,8 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QFile>
 #include <QtCore/QIODevice>
+#include <aes128.h>
+#include <stdint.h>
 
 #define AT_WAIT_TIME_DEFAULT 500
 #define AT_WAIT_TIME_CONNECT 100*40
@@ -1734,6 +1736,7 @@ void mainWin::on_at_timer()
                 test_cmd_block.state = at_state_post_result;
                 if(excel.read_status == 0){
                     client.post_p310(excel.ceid_excel,excel.imsi_excel,excel.cardid_excel);
+                    ui->lb_check_ota_result->setText(QString("post info"));
                 }else if(excel.read_status == -1){
                     ui->lb_check_ota_result->setText(QString("未找到该设备信息"));
                     ui->lb_check_ota_result->setStyleSheet("background-color:red");
@@ -3044,3 +3047,369 @@ void mainWin::ota_stop()
     test_cmd_block.state=at_state_idle;
 }
 
+
+void mainWin::on_pushButton_15_clicked()
+{
+//    uint8_t keystr[16] = {0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0};
+//    uint8_t* data_p;
+//    uint8_t result[128] = {0,};
+//    uint8_t out[128] = {0,};
+//    ht_memset(result, 0x00,128);
+//    ht_memset(out, 0x00,128);
+//    aes128_block.imei = ui->textEdit_imei->toPlainText();
+//    aes128_block.key = ui->textEdit_key->toPlainText();
+//    aes128_block.secret = ui->textEdit_secret->toPlainText();
+//    QString data_s = aes128_block.imei + aes128_block.key + aes128_block.secret;
+//    int len = data_s.length();
+//    QByteArray data_c = data_s.toLatin1();
+//    data_p = (uint8_t*)data_c.data();
+
+//    aes_encrypt_128_extend(keystr,data_p,result);
+//    aes_decrypt_128_extend(len, keystr, result, out);
+//    QString result_s((const char*)result);
+//    QString out_s((const char*)out);
+//    QByteArray result_c;
+//    result_c = QByteArray((const char*)result);
+//    QString tempDataHex = utilMan::toHexStr(QByteArray(result_c));
+//    ui->textEdit_result->setText(QString(tempDataHex));
+//    ui->textEdit_result_2->setText(QString(out));
+}
+
+/************************************************************************
+ * @function: ValueToHexChar
+ * @描述: HexCharToValue的反运算
+ *
+ * @参数:
+ * @param: val 要转换的值.范围0-0x0f
+ * @param: iscap 输出的ascii是否为大写
+ *
+ * @返回:
+ * @return: unsigned char  0xFF:无法转换
+ *         如val=11, 若iscap为真则输出'B';为假,则输出'b'.
+ * @说明:
+ * @作者: xugl (2013/6/6)
+ *-----------------------------------------------------------------------
+ * @修改人:
+ ************************************************************************/
+unsigned char ValueToHexChar(unsigned char val, char iscap)
+{
+    if (val <= 9)
+    {
+        val += '0';                          //0-9
+    }
+    else if (val >= 0x0A && val <= 0x0F)
+    {
+        if (iscap)
+        {
+            val += 'A' - 10;                //A-F
+        }
+        else
+        {
+            val += 'a' - 10;                //a-f
+        }
+    }
+    else
+    {
+        val = 0xFF;                         //无效
+    }
+
+    return val;                             //返回最终结果
+}
+/************************************************************************
+ * @function: ByteArrayBcdToHexString
+ * @描述: 将BCD字节串转成ascii
+ *
+ * @参数:
+ * @param: bcdary 需要转换的数据
+ * @param: ascii 转换好的字符串
+ * @param: len 需要转换的数据的长度
+ * @param: big 是否big-endian输出
+ * @返回:
+ * @说明: 如 hexary[0] = 0x01, hexary[1] = 0x0A, len = 2,
+ *       若big为真,输出ascii[0]-[3]为 '0' '1' '0' 'A'
+ *       若big为假,输出ascii[0]-[3]为 '0' 'A' '0' '1'
+ * @作者: xugl (2013/6/6)
+ *-----------------------------------------------------------------------
+ * @修改人:
+ ************************************************************************/
+void ByteArrayBcdToHexString(unsigned char* bcdary, unsigned char* ascii, unsigned int len, char big)
+{
+    for (unsigned char uc_i = 0; uc_i < len; uc_i++)
+    {
+        if (big)
+        {
+            ascii[(uc_i << 1)] = ValueToHexChar(bcdary[uc_i] >> 4, 1);
+            ascii[(uc_i << 1) + 1] = ValueToHexChar(bcdary[uc_i] & 0x0F, 1);
+        }
+        else
+        {
+            ascii[((len - uc_i - 1) << 1)] = ValueToHexChar(bcdary[uc_i] >> 4, 1);
+            ascii[((len - uc_i - 1) << 1) + 1] = ValueToHexChar(bcdary[uc_i] & 0x0F, 1);
+        }
+    }
+}
+/******************************************************************************************
+Function            :   AT_Bytes2String
+Description     :       transfer bytes to ascii string
+Called By           :   ATS moudle
+Data Accessed       :
+Data Updated    :
+Input           :   UINT8 * pSource, UINT8 * pDest, UINT8 nSourceLen
+Output          :
+Return          :   INT8
+Others          :   build by wangqunyang 2008.05.22
+*******************************************************************************************/
+BOOL AT_Bytes2String(unsigned char *pDest, unsigned char *pSource, unsigned char *nSourceLen)
+{
+
+    unsigned char nTemp = 0;
+    unsigned char nDestLen = 0;
+
+    if ((NULL == pSource) || (NULL == pDest))
+    {
+        return FALSE;
+    }
+
+    while (nTemp < *nSourceLen)
+    {
+        /* get high byte */
+        pDest[nDestLen] = (pSource[nTemp] >> 4) & 0x0f;
+
+        if (pDest[nDestLen] < 10)
+        {
+            pDest[nDestLen] |= '0';
+        }
+        else
+        {
+            pDest[nDestLen] += 'A' - 10;
+        }
+
+        nDestLen++;
+
+        /* get low byte */
+        pDest[nDestLen] = pSource[nTemp] & 0x0f;
+
+        if (pDest[nDestLen] < 10)
+        {
+            pDest[nDestLen] |= '0';
+        }
+        else
+        {
+            pDest[nDestLen] += 'A' - 10;
+        }
+
+        nDestLen++;
+
+        nTemp++;
+    }
+
+    pDest[nDestLen] = '\0';
+
+    *nSourceLen = nDestLen;
+
+    /* string char counter must be even */
+
+    if (*nSourceLen % 2)
+    {
+        return FALSE;
+    }
+
+    return TRUE;
+}
+/******************************************************************************************
+Function            :   AT_String2Bytes
+Description     :       This functions can transfer ascii string to bytes
+Called By           :   ATS moudle
+Data Accessed       :
+Data Updated        :
+Input           :       UINT8 * pDest, UINT8 * pSource, UINT8* pLen
+Output          :
+Return          :   INT8
+Others          :   build by wangqunyang 2008.05.22
+*******************************************************************************************/
+BOOL AT_String2Bytes(unsigned char *pDest, unsigned char *pSource, unsigned char *pLen)
+{
+    unsigned char nSourceLen = *pLen;
+    unsigned char nTemp = 0;
+    unsigned char nByteNumber = 0;
+
+    if ((NULL == pSource) || (NULL == pDest))
+    {
+        return FALSE;
+    }
+
+    /* string char counter must be even */
+    if (nSourceLen % 2)
+    {
+        return FALSE;
+    }
+
+    while (nTemp < nSourceLen)
+    {
+        /* get high half byte */
+        if ((pSource[nTemp] > 0x2f) && (pSource[nTemp] < 0x3a))
+        {
+            pDest[nByteNumber] = (pSource[nTemp] - '0') << 4;
+        }
+        else if ((pSource[nTemp] > 0x40) && (pSource[nTemp] < 0x47))
+        {
+            pDest[nByteNumber] = (pSource[nTemp] - 'A' + 10) << 4;
+        }
+        else if ((pSource[nTemp] > 0x60) && (pSource[nTemp] < 0x67))
+        {
+            pDest[nByteNumber] = (pSource[nTemp] - 'a' + 10) << 4;
+        }
+        else
+        {
+            return FALSE;
+        }
+
+        /* get low half byte */
+        nTemp++;
+
+        if ((pSource[nTemp] > 0x2f) && (pSource[nTemp] < 0x3a))
+        {
+            pDest[nByteNumber] += (pSource[nTemp] - '0');
+        }
+        else if ((pSource[nTemp] > 0x40) && (pSource[nTemp] < 0x47))
+        {
+            pDest[nByteNumber] += (pSource[nTemp] - 'A' + 10);
+        }
+        else if ((pSource[nTemp] > 0x60) && (pSource[nTemp] < 0x67))
+        {
+            pDest[nByteNumber] += (pSource[nTemp] - 'a' + 10);
+        }
+        else
+        {
+            return FALSE;
+        }
+
+        nTemp++;
+
+        nByteNumber++;
+    }
+
+    pDest[nByteNumber] = '\0';
+
+    *pLen = nByteNumber;
+
+    return TRUE;
+}
+void mainWin::on_pushButton_16_clicked()
+{
+    QString filename = ui->textEdit_account_filename->toPlainText();
+    QXlsx::Document xlsx(filename);
+    QXlsx::Format format1;
+    format1.setFontColor(QColor(Qt::red));
+    QXlsx::CellRange range = xlsx.dimension();
+    int rowCounts = range.lastRow();               //获取最后一行
+    aes128_t aes_128;
+    aes_128.key = xlsx.read(1,2).toString();
+    aes_128.secret = xlsx.read(1,3).toString();
+    uint8_t keystr[16] = {0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0};
+    uint8_t* data_p;
+    uint8_t result[128] = {0,};
+    uint8_t out[256] = {0,};
+    QByteArray data_c;
+    QString data_s;
+    uint8_t imei_row = 1;
+    uint8_t reuslt_row = 2;
+    unsigned char data_len = 0;
+    for(int i=3;i<=rowCounts;i++)
+    {
+        aes_128.imei = xlsx.read(i,imei_row).toString();
+        data_s = aes_128.imei + aes_128.key + aes_128.secret+"00000000000";
+        data_c = data_s.toLatin1();
+        data_p = (uint8_t*)data_c.data();
+        aesEncrypt(keystr,16, data_p,result, 96);
+//        aesDecrypt(keystr,16, result, out, 96);
+        data_len = 96;
+        AT_Bytes2String(out,result, &data_len);
+        aes_128.result = QString(QLatin1String((char*)out));
+        xlsx.write(i,reuslt_row, aes_128.result, format1);
+    }
+    xlsx.save();
+}
+//zwj  保存账号设置结果
+void mainWin::save_account_set_result(QString result, QString imei)
+{
+    QString patch = qApp->applicationDirPath();
+    QDateTime current_date_time =QDateTime::currentDateTime();
+    QString date = "/account_result" + current_date_time.toString("yyyy-MM-dd") + ".txt";
+    patch.append(date);
+    QFile file(patch);
+    if(!file.open(QIODevice::Append|QIODevice::Text))
+    {
+        QMessageBox::critical(NULL,"提示","无法创建文件");
+        return;
+    }
+
+    QString current_date = current_date_time.toString("yyyy/MM/dd hh:mm:ss");
+
+    QTextStream txtOutput(&file);
+    txtOutput << current_date + "***" + imei + "***" + result << endl;
+    file.close();
+}
+
+void mainWin::on_pushButton_17_clicked()
+{
+    uint8_t imei_row = 1;
+    uint8_t reuslt_row = 2;
+    char ret = -1;
+    QString imei = ui->textEdit_account_imei->toPlainText();
+    QString filename = ui->textEdit_account_filename->toPlainText();
+    QXlsx::Document xlsx(filename);
+    QXlsx::CellRange range = xlsx.dimension();
+    int rowCounts = range.lastRow();               //获取最后一行
+    if(rowCounts < 0)
+        ret = -2;
+    aes128_t aes_128;
+    ui->lb_account_result->clear();
+    for(int i=1;i<=rowCounts;i++){
+        aes_128.imei = xlsx.read(i,imei_row).toString();
+        if(imei == aes_128.imei){
+            aes_128.result = xlsx.read(i,reuslt_row).toString();
+            if(aes_128.result.length() != 192){
+                ret = -3;
+                break;
+            }
+            QString buf = "AT+ACCOUNT=\"" + aes_128.result + "\"\r\n";
+            this->com_write(buf);
+            ret = 0;
+            break;
+        }
+    }
+    QString showlog;
+    switch(ret)
+    {
+        case -1:
+            showlog = "IMEI未找到";
+            break;
+        case -2:
+            showlog = "文件未找到";
+            break;
+        case -3:
+            showlog = "加密数据长度错误";
+            break;
+    }
+    if(ret < 0){
+        ui->lb_account_result->setText(showlog);
+        ui->lb_account_result->setStyleSheet("background-color:red");
+        save_account_set_result(showlog, aes_128.imei);
+    }
+}
+
+void mainWin::on_pushButton_18_clicked()
+{
+    uint8_t keystr[16] = {0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0};
+    aes128_t aes_128;
+    unsigned char data_len = 192;
+    uint8_t result[256] = {0,};
+    uint8_t out[128] ={0,};
+    aes_128.result = ui->textEdit_account_cipx->toPlainText();
+    QByteArray ba = aes_128.result.toLatin1();
+    char *mm = ba.data();
+    AT_String2Bytes((uint8_t*)result,(uint8_t*)mm,&data_len);
+    aesDecrypt(keystr,16, result, out, 96);
+    return;
+}

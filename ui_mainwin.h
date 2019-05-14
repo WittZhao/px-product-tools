@@ -205,6 +205,17 @@ public:
     QGroupBox *gb_test;
     QWidget *tab_linetest;
     QVBoxLayout *verticalLayout_2;
+    QGroupBox *groupBox_3;
+    QPushButton *pushButton_16;
+    QTabWidget *tabWidget;
+    QWidget *tab_2;
+    QWidget *tab_3;
+    QTextEdit *textEdit_account_imei;
+    QTextEdit *textEdit_account_filename;
+    QPushButton *pushButton_17;
+    QLabel *lb_account_result;
+    QTextEdit *textEdit_account_cipx;
+    QPushButton *pushButton_18;
     QWidget *tab;
     QGroupBox *groupBox;
     QTextEdit *te_http_get_url;
@@ -621,7 +632,7 @@ public:
         tb_gps_3->setMidLineWidth(0);
         page_12 = new QWidget();
         page_12->setObjectName(QStringLiteral("page_12"));
-        page_12->setGeometry(QRect(0, 0, 219, 213));
+        page_12->setGeometry(QRect(0, 0, 219, 285));
         layoutWidget1 = new QWidget(page_12);
         layoutWidget1->setObjectName(QStringLiteral("layoutWidget1"));
         layoutWidget1->setGeometry(QRect(40, 0, 152, 209));
@@ -814,7 +825,7 @@ public:
         tb_gps->addItem(page_10, QString::fromUtf8("\345\215\253\346\230\237\344\277\241\346\201\257"));
         page = new QWidget();
         page->setObjectName(QStringLiteral("page"));
-        page->setGeometry(QRect(0, 0, 549, 257));
+        page->setGeometry(QRect(0, 0, 549, 311));
         plot = new QCustomPlot(page);
         plot->setObjectName(QStringLiteral("plot"));
         plot->setGeometry(QRect(10, 0, 521, 291));
@@ -951,7 +962,7 @@ public:
         line_2->raise();
         page_13 = new QWidget();
         page_13->setObjectName(QStringLiteral("page_13"));
-        page_13->setGeometry(QRect(0, 0, 811, 283));
+        page_13->setGeometry(QRect(0, 0, 811, 409));
         groupBox_5 = new QGroupBox(page_13);
         groupBox_5->setObjectName(QStringLiteral("groupBox_5"));
         groupBox_5->setGeometry(QRect(0, 80, 171, 131));
@@ -1021,6 +1032,43 @@ public:
         verticalLayout_2->setSpacing(6);
         verticalLayout_2->setContentsMargins(11, 11, 11, 11);
         verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
+        groupBox_3 = new QGroupBox(tab_linetest);
+        groupBox_3->setObjectName(QStringLiteral("groupBox_3"));
+        pushButton_16 = new QPushButton(groupBox_3);
+        pushButton_16->setObjectName(QStringLiteral("pushButton_16"));
+        pushButton_16->setGeometry(QRect(480, 70, 121, 61));
+        tabWidget = new QTabWidget(groupBox_3);
+        tabWidget->setObjectName(QStringLiteral("tabWidget"));
+        tabWidget->setGeometry(QRect(660, 490, 159, 80));
+        tab_2 = new QWidget();
+        tab_2->setObjectName(QStringLiteral("tab_2"));
+        tabWidget->addTab(tab_2, QString());
+        tab_3 = new QWidget();
+        tab_3->setObjectName(QStringLiteral("tab_3"));
+        tabWidget->addTab(tab_3, QString());
+        textEdit_account_imei = new QTextEdit(groupBox_3);
+        textEdit_account_imei->setObjectName(QStringLiteral("textEdit_account_imei"));
+        textEdit_account_imei->setGeometry(QRect(20, 290, 451, 61));
+        textEdit_account_filename = new QTextEdit(groupBox_3);
+        textEdit_account_filename->setObjectName(QStringLiteral("textEdit_account_filename"));
+        textEdit_account_filename->setGeometry(QRect(30, 70, 441, 51));
+        pushButton_17 = new QPushButton(groupBox_3);
+        pushButton_17->setObjectName(QStringLiteral("pushButton_17"));
+        pushButton_17->setGeometry(QRect(480, 290, 121, 61));
+        lb_account_result = new QLabel(groupBox_3);
+        lb_account_result->setObjectName(QStringLiteral("lb_account_result"));
+        lb_account_result->setGeometry(QRect(20, 380, 461, 61));
+        lb_account_result->setStyleSheet(QStringLiteral("background-color: rgb(229, 252, 255);"));
+        lb_account_result->setWordWrap(true);
+        textEdit_account_cipx = new QTextEdit(groupBox_3);
+        textEdit_account_cipx->setObjectName(QStringLiteral("textEdit_account_cipx"));
+        textEdit_account_cipx->setGeometry(QRect(30, 160, 441, 51));
+        pushButton_18 = new QPushButton(groupBox_3);
+        pushButton_18->setObjectName(QStringLiteral("pushButton_18"));
+        pushButton_18->setGeometry(QRect(480, 160, 121, 61));
+
+        verticalLayout_2->addWidget(groupBox_3);
+
         tabMain->addTab(tab_linetest, QString());
         tab = new QWidget();
         tab->setObjectName(QStringLiteral("tab"));
@@ -1117,7 +1165,7 @@ public:
 
         retranslateUi(mainWin);
 
-        tabMain->setCurrentIndex(1);
+        tabMain->setCurrentIndex(3);
         toolBox_2->setCurrentIndex(5);
         tb_gps_3->setCurrentIndex(0);
         tb_gps->setCurrentIndex(2);
@@ -1259,7 +1307,29 @@ public:
         tabMain->setTabText(tabMain->indexOf(tabtest), QApplication::translate("mainWin", "P310QH_\344\272\247\347\272\277\346\265\213\350\257\225", 0));
         gb_test->setTitle(QString());
         tabMain->setTabText(tabMain->indexOf(tabUart), QApplication::translate("mainWin", "\344\270\262\345\217\243\350\260\203\350\257\225", 0));
-        tabMain->setTabText(tabMain->indexOf(tab_linetest), QApplication::translate("mainWin", "\345\216\213\345\212\233\346\265\213\350\257\225", 0));
+        groupBox_3->setTitle(QApplication::translate("mainWin", "GroupBox", 0));
+        pushButton_16->setText(QApplication::translate("mainWin", "\346\211\271\345\212\240\345\257\206", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("mainWin", "Tab 1", 0));
+        tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("mainWin", "Tab 2", 0));
+        textEdit_account_imei->setHtml(QApplication::translate("mainWin", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">IMEI</p></body></html>", 0));
+        textEdit_account_filename->setHtml(QApplication::translate("mainWin", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">account.xlsx</p></body></html>", 0));
+        pushButton_17->setText(QApplication::translate("mainWin", "\345\217\221\351\200\201", 0));
+        lb_account_result->setText(QApplication::translate("mainWin", "RESULT", 0));
+        textEdit_account_cipx->setHtml(QApplication::translate("mainWin", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">account.xlsx</p></body></html>", 0));
+        pushButton_18->setText(QApplication::translate("mainWin", "\350\247\243\345\257\206", 0));
+        tabMain->setTabText(tabMain->indexOf(tab_linetest), QApplication::translate("mainWin", "\345\215\203\345\257\273\350\264\246\345\217\267", 0));
         groupBox->setTitle(QApplication::translate("mainWin", "\347\275\221\347\273\234\345\274\200\351\224\201\346\265\213\350\257\225", 0));
         te_http_get_url->setHtml(QApplication::translate("mainWin", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"

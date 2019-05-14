@@ -214,6 +214,14 @@ struct at_gps_cmd_t{
   int gps_ack_cnt;
   int waitcnt;
 };
+
+struct aes128_t{
+    QString imei;
+    QString key;
+    QString secret;
+    QString result;
+};
+
 #define  GPS_OPEN_WAIT_TIME 500
 #define  GPS_OPEN_DELAY_TIME 10
 #define  GPS_READ_WAIT_TIME 250
@@ -282,6 +290,7 @@ private:
     at_gps_cmd_t at_gps_cmd_block={0,0,};
     at_test_cmd_t test_cmd_block;
     cmd_test_config_t cmd_test_config;
+    aes128_t aes128_block;
     QProgressBar *progressBar;  //发送文件进度条
 
     QTextCodec *codec;      //用于解决接收和发送中文乱码问题
@@ -335,6 +344,7 @@ private:
     void com_init(void);
     bool imei_get(QString src, QString &imei, QString &sn);
     void save_gps_test_result(QString result, QString imei);
+    void save_account_set_result(QString result, QString imei);
 private slots:
    // void on_sendAuto_CheckBox_clicked(bool checked);
     void on_clearSendCount_Button_clicked();
@@ -489,6 +499,10 @@ private slots:
     void on_pb_check_ota_start_clicked();
     int ota_get_txt_imei();
     void ota_stop();
+    void on_pushButton_15_clicked();
+    void on_pushButton_16_clicked();
+    void on_pushButton_17_clicked();
+    void on_pushButton_18_clicked();
 };
 
 /*class readComThread:public QThread
