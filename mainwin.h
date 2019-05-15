@@ -126,6 +126,8 @@ enum at_cmd_state_t{
     at_state_post_result,
     at_state_ota_sleep,
     at_state_ota_stop,
+  //qxwz account
+    at_state_qxwz_account,
 };
 enum work_mode_t{
   work_mode_param,
@@ -161,6 +163,8 @@ struct at_test_cmd_t{
   int test_enable;
   int ota_enable;  //移动SIM卡空中写号
   int check_enable;
+  int qxwz_account_set;
+  QString qxwz_account_imei;
   at_cmd_state_t state;
   int send_cnt;
   int wait_time_cnt;
@@ -178,6 +182,7 @@ struct at_test_cmd_t{
   QString imsi_text;
   QString post_data_text;
   QString post_result_text;
+
 };
 
 struct at_net_cmd_t{
@@ -345,6 +350,7 @@ private:
     bool imei_get(QString src, QString &imei, QString &sn);
     void save_gps_test_result(QString result, QString imei);
     void save_account_set_result(QString result, QString imei);
+    void qxwz_account_set(QString imei);
 private slots:
    // void on_sendAuto_CheckBox_clicked(bool checked);
     void on_clearSendCount_Button_clicked();
@@ -503,6 +509,8 @@ private slots:
     void on_pushButton_16_clicked();
     void on_pushButton_17_clicked();
     void on_pushButton_18_clicked();
+    void on_pushButton_17_released();
+    void on_pushButton_19_clicked();
 };
 
 /*class readComThread:public QThread

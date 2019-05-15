@@ -66,7 +66,7 @@ public:
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", 0));
-        pushButton->setText(QApplication::translate("mainlog", "20190308", 0));
+        pushButton->setText(QApplication::translate("mainlog", "20190513-\345\215\203\345\257\273\350\264\246\345\217\267\350\256\276\347\275\256", 0));
     } // retranslateUi
 
 };

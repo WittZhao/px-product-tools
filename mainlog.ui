@@ -52,7 +52,7 @@ p, li { white-space: pre-wrap; }
    <item row="0" column="0">
     <widget class="QPushButton" name="pushButton">
      <property name="text">
-      <string>20190308</string>
+      <string>20190513-千寻账号设置</string>
      </property>
     </widget>
    </item>

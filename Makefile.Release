@@ -190,7 +190,7 @@ release/com_res.o: com.rc
 	windres -i com.rc -o release\com_res.o --include-dir=. $(DEFINES)
 
 qmake: FORCE
-	@$(QMAKE) -spec win32-g++ CONFIG+=debug -o Makefile.Release comTools.pro
+	@$(QMAKE) -spec win32-g++ -o Makefile.Release comTools.pro
 
 qmake_all: FORCE
 
@@ -6014,7 +6014,7 @@ release/qcustomplot.o: qcustomplot.cpp qcustomplot.h \
 		C:/Qt/Qt5.4.0/5.4/mingw491_32/include/QtPrintSupport/qtprintsupportversion.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\qcustomplot.o qcustomplot.cpp
 
-release/aes128.o: aes128.cpp aes128.h
+release/aes128.o: aes128.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\aes128.o aes128.cpp
 
 release/qextserialport_win.o: qextserialport_win.cpp qextserialport.h \

@@ -707,6 +707,7 @@ void mainWin::com_at_process(QByteArray combuf)
                }else{
                    ui->lb_check_ota_result->setText("IMEI不相同，请确认");
                    ota_stop();
+                   test_cmd_block.state=at_state_idle;
                }
                test_cmd_block.ota_imei_check = 0;
                break;
@@ -717,15 +718,26 @@ void mainWin::com_at_process(QByteArray combuf)
                test_cmd_block.ota_imeir_text.remove("\n");
                test_cmd_block.gps_test_imei_get = 0;
                at_gps_cmd_block.state=at_net_state_cpin_send;
+           }else if(1 == test_cmd_block.qxwz_account_set){
+                test_cmd_block.qxwz_account_imei = imei;
+                test_cmd_block.qxwz_account_imei .remove(" ");
+                test_cmd_block.qxwz_account_imei .remove("\r");
+                test_cmd_block.qxwz_account_imei .remove("\n");
+                qxwz_account_set(test_cmd_block.qxwz_account_imei);
+                test_cmd_block.state=at_state_qxwz_account;
+                break;
            }else{
                ui->lb_imei_show->setText(imei);
+               test_cmd_block.state=at_state_idle;
            }
        }
-       else
+       else{
            ui->lb_imei_show->setText("xxxxx");
-       qDebug()<<QString("imei read wait:")<<comstr<<"get imei:"<<imei;
+            qDebug()<<QString("imei read wait:")<<comstr<<"get imei:"<<imei;
+//            test_cmd_block.state=at_state_idle;
        }
-       test_cmd_block.state=at_state_idle;
+       }
+
        break;
      case at_state_imei_write_wait:
         if(comstr.contains("OK"))
@@ -863,6 +875,17 @@ void mainWin::com_at_process(QByteArray combuf)
                 test_cmd_block.wait_time_cnt = OTA_SLEEP SECONDS;
                 cnt = 0;
             }
+        }
+        break;
+    case at_state_qxwz_account:
+        comstr=comstr.toUpper();
+        if(comstr.contains("ACCOUNT OK")){       
+            QString showlog = "设置成功" ;
+            ui->lb_account_result->setText(showlog);
+            ui->lb_account_result->setStyleSheet("background-color:green");
+            save_account_set_result(showlog, test_cmd_block.qxwz_account_imei);
+            test_cmd_block.qxwz_account_set = 0;
+            test_cmd_block.state=at_state_idle;
         }
         break;
      default:
@@ -3047,7 +3070,9 @@ void mainWin::ota_stop()
     test_cmd_block.state=at_state_idle;
 }
 
-
+//千寻账号设置
+//千寻账号设置
+//千寻账号设置
 void mainWin::on_pushButton_15_clicked()
 {
 //    uint8_t keystr[16] = {0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0};
@@ -3350,21 +3375,20 @@ void mainWin::save_account_set_result(QString result, QString imei)
     txtOutput << current_date + "***" + imei + "***" + result << endl;
     file.close();
 }
-
-void mainWin::on_pushButton_17_clicked()
+void mainWin::qxwz_account_set(QString imei)
 {
     uint8_t imei_row = 1;
     uint8_t reuslt_row = 2;
     char ret = -1;
-    QString imei = ui->textEdit_account_imei->toPlainText();
+//    QString imei = ui->textEdit_account_imei->toPlainText();
     QString filename = ui->textEdit_account_filename->toPlainText();
     QXlsx::Document xlsx(filename);
     QXlsx::CellRange range = xlsx.dimension();
     int rowCounts = range.lastRow();               //获取最后一行
     if(rowCounts < 0)
         ret = -2;
+
     aes128_t aes_128;
-    ui->lb_account_result->clear();
     for(int i=1;i<=rowCounts;i++){
         aes_128.imei = xlsx.read(i,imei_row).toString();
         if(imei == aes_128.imei){
@@ -3399,6 +3423,21 @@ void mainWin::on_pushButton_17_clicked()
     }
 }
 
+void mainWin::on_pushButton_17_clicked()
+{
+//    ui->lb_account_result->clear();
+//    test_cmd_block.qxwz_account_imei.clear();
+//    QString imei = ui->textEdit_account_imei->toPlainText();
+//    if(imei.length() == 15){
+//        qxwz_account_set(imei);
+//    }else{
+//        this->com_write(QString("AT+EGMR=2,7\r\n"));
+//        test_cmd_block.qxwz_account_set = 1;
+//        test_cmd_block.state = at_state_imei_read_wait;
+//    }
+
+}
+
 void mainWin::on_pushButton_18_clicked()
 {
     uint8_t keystr[16] = {0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0};
@@ -3412,4 +3451,25 @@ void mainWin::on_pushButton_18_clicked()
     AT_String2Bytes((uint8_t*)result,(uint8_t*)mm,&data_len);
     aesDecrypt(keystr,16, result, out, 96);
     return;
+}
+
+void mainWin::on_pushButton_17_released()
+{
+    ui->lb_account_result->clear();
+    test_cmd_block.qxwz_account_imei.clear();
+    QString imei = ui->textEdit_account_imei->toPlainText();
+    if(imei.length() == 15){
+        qxwz_account_set(imei);
+    }else{
+        this->com_write(QString("AT+EGMR=2,7\r\n"));
+        test_cmd_block.qxwz_account_set = 1;
+        test_cmd_block.state = at_state_imei_read_wait;
+    }
+}
+
+void mainWin::on_pushButton_19_clicked()
+{
+    QString ctxt = ui->textEdit_account_cipx->toPlainText();
+    QString buf = "AT+ACCOUNT=\"" + ctxt + "\"\r\n";
+    this->com_write(buf);
 }

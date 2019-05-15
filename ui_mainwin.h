@@ -216,6 +216,7 @@ public:
     QLabel *lb_account_result;
     QTextEdit *textEdit_account_cipx;
     QPushButton *pushButton_18;
+    QPushButton *pushButton_19;
     QWidget *tab;
     QGroupBox *groupBox;
     QTextEdit *te_http_get_url;
@@ -1036,7 +1037,8 @@ public:
         groupBox_3->setObjectName(QStringLiteral("groupBox_3"));
         pushButton_16 = new QPushButton(groupBox_3);
         pushButton_16->setObjectName(QStringLiteral("pushButton_16"));
-        pushButton_16->setGeometry(QRect(480, 70, 121, 61));
+        pushButton_16->setEnabled(true);
+        pushButton_16->setGeometry(QRect(480, 210, 121, 51));
         tabWidget = new QTabWidget(groupBox_3);
         tabWidget->setObjectName(QStringLiteral("tabWidget"));
         tabWidget->setGeometry(QRect(660, 490, 159, 80));
@@ -1051,7 +1053,7 @@ public:
         textEdit_account_imei->setGeometry(QRect(20, 290, 451, 61));
         textEdit_account_filename = new QTextEdit(groupBox_3);
         textEdit_account_filename->setObjectName(QStringLiteral("textEdit_account_filename"));
-        textEdit_account_filename->setGeometry(QRect(30, 70, 441, 51));
+        textEdit_account_filename->setGeometry(QRect(20, 210, 441, 51));
         pushButton_17 = new QPushButton(groupBox_3);
         pushButton_17->setObjectName(QStringLiteral("pushButton_17"));
         pushButton_17->setGeometry(QRect(480, 290, 121, 61));
@@ -1062,10 +1064,16 @@ public:
         lb_account_result->setWordWrap(true);
         textEdit_account_cipx = new QTextEdit(groupBox_3);
         textEdit_account_cipx->setObjectName(QStringLiteral("textEdit_account_cipx"));
-        textEdit_account_cipx->setGeometry(QRect(30, 160, 441, 51));
+        textEdit_account_cipx->setEnabled(true);
+        textEdit_account_cipx->setGeometry(QRect(20, 40, 441, 51));
         pushButton_18 = new QPushButton(groupBox_3);
         pushButton_18->setObjectName(QStringLiteral("pushButton_18"));
-        pushButton_18->setGeometry(QRect(480, 160, 121, 61));
+        pushButton_18->setEnabled(false);
+        pushButton_18->setGeometry(QRect(470, 90, 121, 61));
+        pushButton_19 = new QPushButton(groupBox_3);
+        pushButton_19->setObjectName(QStringLiteral("pushButton_19"));
+        pushButton_19->setEnabled(true);
+        pushButton_19->setGeometry(QRect(470, 40, 121, 51));
 
         verticalLayout_2->addWidget(groupBox_3);
 
@@ -1327,8 +1335,9 @@ public:
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">account.xlsx</p></body></html>", 0));
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">\345\257\206\346\226\207</p></body></html>", 0));
         pushButton_18->setText(QApplication::translate("mainWin", "\350\247\243\345\257\206", 0));
+        pushButton_19->setText(QApplication::translate("mainWin", "\345\215\225\347\213\254\350\256\276\347\275\256", 0));
         tabMain->setTabText(tabMain->indexOf(tab_linetest), QApplication::translate("mainWin", "\345\215\203\345\257\273\350\264\246\345\217\267", 0));
         groupBox->setTitle(QApplication::translate("mainWin", "\347\275\221\347\273\234\345\274\200\351\224\201\346\265\213\350\257\225", 0));
         te_http_get_url->setHtml(QApplication::translate("mainWin", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
